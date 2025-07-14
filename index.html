@@ -263,3 +263,13 @@ cargarEstado();
 </div>
 </body>
 </html>
+<script>
+const estados = ['','aprobado','cursando'];
+...
+document.querySelectorAll('.ramo').forEach(ramo => {
+  ramo.addEventListener("click", () => toggleEstado(ramo));
+});
+cargarEstado();
+</script>
+</body>
+</html>
