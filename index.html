@@ -1,0 +1,276 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Malla Curricular - Ingeniería Ambiental UV</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fbe9f0;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #6d1b3f;
+    }
+    .semestre {
+      margin: 20px auto;
+      max-width: 1000px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    .semestre h2 {
+      color: #d81b60;
+      border-left: 5px solid #f06292;
+      padding-left: 10px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+    .ramo {
+      background-color: #fce4ec;
+      border: 2px solid #f8bbd0;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+    .ramo.aprobado {
+      background-color: #d0f0d0;
+      border-color: #81c784;
+      text-decoration: line-through;
+      color: #2e7d32;
+    }
+    .ramo.cursando {
+      background-color: #fff9c4;
+      border-color: #fbc02d;
+      color: #7f6000;
+    }
+    .ramo.bloqueado {
+      background-color: #eeeeee;
+      color: #aaaaaa;
+      border-style: dashed;
+      cursor: not-allowed;
+    }
+    .botones {
+      text-align: center;
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #ec407a;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #d81b60;
+    }
+  </style>
+</head>
+<body>
+  <h1>Malla Curricular - Ingeniería Ambiental UV</h1>
+  <p style="text-align:center;">Haz clic en cada ramo para marcarlo como cursado o aprobado. Tu progreso se guarda automáticamente.</p>
+
+<div class="semestre">
+  <h2>Semestre 1</h2>
+  <div class="grid">
+    <div class="ramo" data-codigo="MAT1">Fundamentos de matemática</div>
+    <div class="ramo" data-codigo="DP">Desarrollo Personal</div>
+    <div class="ramo" data-codigo="DITS">Desafíos de Ingeniería, Tecnología y Sociedad</div>
+    <div class="ramo" data-codigo="PCP">Principios de computación y programación</div>
+    <div class="ramo" data-codigo="FIS0">Fundamentos de física</div>
+  </div>
+</div>
+
+<div class="semestre">
+  <h2>Semestre 2</h2>
+  <div class="grid">
+    <div class="ramo" data-codigo="CAL1">Cálculo diferencial e integral</div>
+    <div class="ramo" data-codigo="QG">Química general</div>
+    <div class="ramo" data-codigo="IIE">Ingeniería, Innovación y Emprendimiento</div>
+    <div class="ramo" data-codigo="BCEL">Biología Celular</div>
+    <div class="ramo" data-codigo="FIS1">Física 1</div>
+    <div class="ramo" data-codigo="ING1">Idioma (Inglés I)</div>
+  </div>
+</div>
+
+<div class="semestre">
+  <h2>Semestre 3</h2>
+  <div class="grid">
+    <div class="ramo" data-codigo="CAL2">Series y Cálculo en Varias Variables</div>
+    <div class="ramo" data-codigo="DIB">Dibujo para Ingeniería</div>
+    <div class="ramo" data-codigo="OMA">Organismo y Medio Ambiente</div>
+    <div class="ramo" data-codigo="QIA">Química Inorgánica y Ambiental</div>
+    <div class="ramo" data-codigo="FIS2">Física 2</div>
+    <div class="ramo" data-codigo="ETI">Ética Profesional</div>
+    <div class="ramo" data-codigo="PVM">Práctica Vinculación con el Medio</div>
+  </div>
+</div>
+
+<div class="semestre">
+  <h2>Semestre 4</h2>
+  <div class="grid">
+    <div class="ramo" data-codigo="QOA">Química Orgánica y Ambiental</div>
+    <div class="ramo" data-codigo="GEO">Geomorfología</div>
+    <div class="ramo" data-codigo="EDAL">Ecuaciones Diferenciales y Álgebra Lineal</div>
+    <div class="ramo" data-codigo="BIO">Biodiversidad</div>
+    <div class="ramo" data-codigo="BIOEST">Bioestadística</div>
+    <div class="ramo" data-codigo="BMAT">Balances de Materia</div>
+  </div>
+</div>
+
+<div class="botones">
+  <button onclick="resetMalla()">Reiniciar progreso</button>
+</div>
+
+<script>
+const estados = ['','aprobado','cursando'];
+const dependencias = {
+  "CAL1": ["MAT1"],
+  "DIB": ["MAT1"],
+  "PVM": ["MAT1", "DP", "DITS", "PCP"],
+  "FIS1": ["FIS0"],
+  "CAL2": ["CAL1"],
+  "QIA": ["QG"],
+  "OMA": ["BCEL"],
+  "QOA": ["QG"],
+  "GEO": ["DIB"],
+  "EDAL": ["CAL2"],
+  "BIO": ["BCEL"],
+  "BIOEST": ["CAL1"],
+  "BMAT": ["QG", "CAL1"]
+};
+
+function toggleEstado(elem) {
+  if (elem.classList.contains("bloqueado")) return;
+  let estadoActual = estados.find(e => elem.classList.contains(e)) || '';
+  let nextEstado = estados[(estados.indexOf(estadoActual) + 1) % estados.length];
+  estados.forEach(e => elem.classList.remove(e));
+  if (nextEstado) elem.classList.add(nextEstado);
+  guardarEstado();
+  activarDependientes();
+}
+
+function guardarEstado() {
+  const estadoRamos = {};
+  document.querySelectorAll('.ramo').forEach(ramo => {
+    estadoRamos[ramo.dataset.codigo] = estados.find(e => ramo.classList.contains(e)) || '';
+  });
+  localStorage.setItem("estadoMalla", JSON.stringify(estadoRamos));
+}
+
+function cargarEstado() {
+  const guardado = JSON.parse(localStorage.getItem("estadoMalla") || '{}');
+  document.querySelectorAll('.ramo').forEach(ramo => {
+    const estado = guardado[ramo.dataset.codigo];
+    if (estado) ramo.classList.add(estado);
+  });
+  activarDependientes();
+}
+
+function activarDependientes() {
+  document.querySelectorAll('.ramo').forEach(ramo => {
+    const codigo = ramo.dataset.codigo;
+    ramo.classList.remove("bloqueado");
+    for (let [ramoTarget, requisitos] of Object.entries(dependencias)) {
+      if (codigo === ramoTarget) {
+        let habilitado = requisitos.every(req =>
+          document.querySelector(`[data-codigo="${req}"]`)?.classList.contains("aprobado")
+        );
+        if (!habilitado) ramo.classList.add("bloqueado");
+      }
+    }
+  });
+}
+
+function resetMalla() {
+  localStorage.removeItem("estadoMalla");
+  document.querySelectorAll('.ramo').forEach(ramo => {
+    estados.forEach(e => ramo.classList.remove(e));
+    ramo.classList.remove("bloqueado");
+  });
+  activarDependientes();
+}
+
+document.querySelectorAll('.ramo').forEach(ramo => {
+  ramo.addEventListener("click", () => toggleEstado(ramo));
+});
+cargarEstado();
+</script>
+
+<div class="semestre">
+  <h2>Semestre 5</h2>
+  <div class="grid">
+    <div class="ramo" data-codigo="BIOQ">Bioquímica</div>
+    <div class="ramo" data-codigo="LQA">Laboratorio de Química Ambiental</div>
+    <div class="ramo" data-codigo="MF">Mecánica de Fluidos</div>
+    <div class="ramo" data-codigo="ECO">Fundamentos de Ecología</div>
+    <div class="ramo" data-codigo="OT">Ordenamiento Territorial</div>
+    <div class="ramo" data-codigo="TERMO">Termodinámica</div>
+  </div>
+</div>
+
+<div class="semestre">
+  <h2>Semestre 6</h2>
+  <div class="grid">
+    <div class="ramo" data-codigo="ECT">Ecotoxicología</div>
+    <div class="ramo" data-codigo="OU">Operaciones Unitarias</div>
+    <div class="ramo" data-codigo="MS">Modelación de Sistemas</div>
+    <div class="ramo" data-codigo="MCA">Meteorología y Contaminación Atmosférica</div>
+    <div class="ramo" data-codigo="MBA">Microbiología Ambiental</div>
+    <div class="ramo" data-codigo="PR">Prevención de Riesgos</div>
+    <div class="ramo" data-codigo="ING2">Inglés Instrumental</div>
+  </div>
+</div>
+
+<div class="semestre">
+  <h2>Semestre 7</h2>
+  <div class="grid">
+    <div class="ramo" data-codigo="PAC">Participación Ambiental Ciudadana</div>
+    <div class="ramo" data-codigo="IA">Impactos Ambientales</div>
+    <div class="ramo" data-codigo="MIC1">Manejo Integrado de Cuencas 1</div>
+    <div class="ramo" data-codigo="IGR">Ingeniería y Gestión de Residuos</div>
+    <div class="ramo" data-codigo="EA">Economía Ambiental</div>
+    <div class="ramo" data-codigo="LA">Legislación Ambiental</div>
+    <div class="ramo" data-codigo="PI">Práctica Inicial</div>
+    <div class="ramo" data-codigo="TIPE1">TIPE 1</div>
+  </div>
+</div>
+
+<div class="semestre">
+  <h2>Semestre 8</h2>
+  <div class="grid">
+    <div class="ramo" data-codigo="MRN">Manejo de los Recursos Naturales</div>
+    <div class="ramo" data-codigo="MIC2">Manejo Integrado de Cuencas 2</div>
+    <div class="ramo" data-codigo="OEP">Organización y Evaluación de Proyectos</div>
+    <div class="ramo" data-codigo="GE">Gestión Energética</div>
+    <div class="ramo" data-codigo="TT1">Trabajo de Título 1</div>
+    <div class="ramo" data-codigo="EP1">Electivo Profesional 1</div>
+    <div class="ramo" data-codigo="TIPE2">TIPE 2</div>
+  </div>
+</div>
+
+<div class="semestre">
+  <h2>Semestre 9</h2>
+  <div class="grid">
+    <div class="ramo" data-codigo="SEA">Sistemas de Gestión Ambiental</div>
+    <div class="ramo" data-codigo="SEAFF">Sostenibilidad y Eficiencia Ambiental</div>
+    <div class="ramo" data-codigo="EP2">Electivo Profesional 2</div>
+    <div class="ramo" data-codigo="TT2">Trabajo de Título 2</div>
+    <div class="ramo" data-codigo="PP">Práctica Profesional</div>
+  </div>
+</div>
+
+</body>
+</html>
